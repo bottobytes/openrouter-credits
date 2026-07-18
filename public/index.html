@@ -157,8 +157,16 @@
 
     .detail-card .label {
       font-size: 0.8rem;
-      color: #8b949e;
       margin-top: 0.25rem;
+      animation: label-hue 25s linear infinite;
+    }
+
+    @keyframes label-hue {
+      0%   { color: #8b949e; }
+      25%  { color: #6b8fae; }
+      50%  { color: #9e8bb4; }
+      75%  { color: #ae8b6b; }
+      100% { color: #8b949e; }
     }
 
     .detail-card.total .value { animation: value-hue-total 15s linear infinite; }
@@ -181,13 +189,14 @@
     .status {
       margin-top: 2.5rem;
       font-size: 0.8rem;
-      color: #484f58;
-      animation: status-drift 10s ease-in-out infinite;
+      animation: status-drift 12s ease-in-out infinite;
     }
 
     @keyframes status-drift {
       0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(5px); }
+      25% { transform: translateX(12px); }
+      50% { transform: translateX(0); }
+      75% { transform: translateX(-12px); }
     }
 
     .status .dot {
@@ -197,32 +206,74 @@
       border-radius: 50%;
       margin-right: 6px;
       vertical-align: middle;
+      transition: background 0.5s;
     }
 
-    .status .dot.online { background: #3fb950; }
-    .status .dot.offline { background: #f85149; }
-    .status .dot.loading { background: #d29922; animation: flash 1s ease-in-out infinite; }
+    .status .dot.online {
+      animation: dot-pulse-online 3s ease-in-out infinite;
+    }
 
-    @keyframes flash {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
+    .status .dot.offline {
+      animation: dot-pulse-offline 3s ease-in-out infinite;
+    }
+
+    .status .dot.loading {
+      background: #d29922;
+      animation: flash 1s ease-in-out infinite;
+    }
+
+    @keyframes dot-pulse-online {
+      0%, 100% { background: #3fb950; opacity: 1; }
+      50% { background: #58a6ff; opacity: 0.6; }
+    }
+
+    @keyframes dot-pulse-offline {
+      0%, 100% { background: #f85149; opacity: 1; }
+      50% { background: #ff6b9d; opacity: 0.6; }
+    }
+
+    .status-text {
+      animation: status-hue 20s linear infinite;
+    }
+
+    @keyframes status-hue {
+      0%   { color: #484f58; }
+      25%  { color: #586f7e; }
+      50%  { color: #6e586f; }
+      75%  { color: #6f6358; }
+      100% { color: #484f58; }
+    }
+
+    .balance-dollar {
+      font-size: 2rem;
+      vertical-align: super;
+      animation: dollar-cycle 22s linear infinite;
+    }
+
+    @keyframes dollar-cycle {
+      0%   { opacity: 0.6; color: #8b949e; }
+      25%  { opacity: 0.8; color: #58a6ff; }
+      50%  { opacity: 0.5; color: #a688ff; }
+      75%  { opacity: 0.7; color: #ffa657; }
+      100% { opacity: 0.6; color: #8b949e; }
     }
 
     .error-message {
       margin-top: 1rem;
-      color: #f85149;
       font-size: 0.85rem;
       display: none;
     }
 
     .error-message.visible {
       display: block;
+      animation: error-hue 8s linear infinite;
     }
 
-    .balance-dollar {
-      font-size: 2rem;
-      vertical-align: super;
-      opacity: 0.6;
+    @keyframes error-hue {
+      0%   { color: #f85149; }
+      33%  { color: #ff6b9d; }
+      66%  { color: #f0883e; }
+      100% { color: #f85149; }
     }
   </style>
 </head>
@@ -253,8 +304,8 @@
 
     <div class="status">
       <span class="dot" id="statusDot"></span>
-      <span id="statusText">Loading...</span>
-      <span id="nextUpdate"></span>
+      <span class="status-text" id="statusText">Loading...</span>
+      <span class="status-text" id="nextUpdate"></span>
     </div>
   </div>
 
