@@ -15,34 +15,87 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
+    }
+
+    /* ── Animated gradient background (burn-in prevention) ── */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Floating particle layer ── */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 1;
+      pointer-events: none;
     }
 
     .container {
+      position: relative;
+      z-index: 2;
       text-align: center;
       padding: 2rem;
+      animation: container-float 6s ease-in-out infinite;
+    }
+
+    @keyframes container-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     h1 {
       font-size: 1.5rem;
       font-weight: 500;
-      color: #8b949e;
       margin-bottom: 2rem;
       letter-spacing: 0.05em;
       text-transform: uppercase;
+      animation: hue-cycle-slow 30s linear infinite;
     }
 
     .balance {
       font-size: 4rem;
       font-weight: 700;
-      color: #58a6ff;
       margin-bottom: 0.5rem;
       font-variant-numeric: tabular-nums;
+      animation: breathe 4s ease-in-out infinite, hue-cycle 20s linear infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.04); opacity: 0.85; }
+    }
+
+    @keyframes hue-cycle {
+      0%   { color: #58a6ff; }
+      25%  { color: #a688ff; }
+      50%  { color: #ff6b9d; }
+      75%  { color: #ffa657; }
+      100% { color: #58a6ff; }
+    }
+
+    @keyframes hue-cycle-slow {
+      0%   { color: #8b949e; }
+      33%  { color: #6b8fae; }
+      66%  { color: #9e8bb4; }
+      100% { color: #8b949e; }
     }
 
     .balance-label {
       font-size: 0.9rem;
       color: #8b949e;
       margin-bottom: 2.5rem;
+      animation: label-fade 8s ease-in-out infinite;
+    }
+
+    @keyframes label-fade {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
     }
 
     .details {
@@ -53,11 +106,46 @@
     }
 
     .detail-card {
-      background: #161b22;
-      border: 1px solid #30363d;
+      background: rgba(22, 27, 34, 0.85);
+      border: 1px solid rgba(48, 54, 61, 0.6);
       border-radius: 12px;
       padding: 1.5rem 2rem;
       min-width: 160px;
+      backdrop-filter: blur(4px);
+    }
+
+    .detail-card.total {
+      animation: card-drift-total 7s ease-in-out infinite, card-border-cycle-total 12s linear infinite;
+    }
+
+    .detail-card.usage {
+      animation: card-drift-usage 9s ease-in-out infinite, card-border-cycle-usage 14s linear infinite;
+    }
+
+    @keyframes card-drift-total {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-6px) translateX(3px); }
+      50% { transform: translateY(0) translateX(0); }
+      75% { transform: translateY(4px) translateX(-3px); }
+    }
+
+    @keyframes card-drift-usage {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(4px) translateX(-3px); }
+      50% { transform: translateY(0) translateX(0); }
+      75% { transform: translateY(-6px) translateX(3px); }
+    }
+
+    @keyframes card-border-cycle-total {
+      0%   { border-color: rgba(126, 231, 135, 0.6); }
+      50%  { border-color: rgba(88, 166, 255, 0.6); }
+      100% { border-color: rgba(126, 231, 135, 0.6); }
+    }
+
+    @keyframes card-border-cycle-usage {
+      0%   { border-color: rgba(240, 136, 62, 0.6); }
+      50%  { border-color: rgba(255, 107, 157, 0.6); }
+      100% { border-color: rgba(240, 136, 62, 0.6); }
     }
 
     .detail-card .value {
@@ -73,13 +161,33 @@
       margin-top: 0.25rem;
     }
 
-    .detail-card.usage .value { color: #f0883e; }
-    .detail-card.total .value { color: #7ee787; }
+    .detail-card.total .value { animation: value-hue-total 15s linear infinite; }
+    .detail-card.usage .value { animation: value-hue-usage 15s linear infinite; }
+
+    @keyframes value-hue-total {
+      0%   { color: #7ee787; }
+      33%  { color: #58a6ff; }
+      66%  { color: #a688ff; }
+      100% { color: #7ee787; }
+    }
+
+    @keyframes value-hue-usage {
+      0%   { color: #f0883e; }
+      33%  { color: #ff6b9d; }
+      66%  { color: #ffa657; }
+      100% { color: #f0883e; }
+    }
 
     .status {
       margin-top: 2.5rem;
       font-size: 0.8rem;
       color: #484f58;
+      animation: status-drift 10s ease-in-out infinite;
+    }
+
+    @keyframes status-drift {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
     }
 
     .status .dot {
@@ -93,9 +201,9 @@
 
     .status .dot.online { background: #3fb950; }
     .status .dot.offline { background: #f85149; }
-    .status .dot.loading { background: #d29922; animation: pulse 1s ease-in-out infinite; }
+    .status .dot.loading { background: #d29922; animation: flash 1s ease-in-out infinite; }
 
-    @keyframes pulse {
+    @keyframes flash {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 1; }
     }
@@ -119,6 +227,9 @@
   </style>
 </head>
 <body>
+  <canvas id="bg-canvas"></canvas>
+  <canvas id="particle-canvas"></canvas>
+
   <div class="container">
     <h1>OpenRouter Credits</h1>
 
@@ -148,6 +259,115 @@
   </div>
 
   <script>
+    // ── Animated gradient background (burn-in prevention) ──
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgTime = 0;
+
+    function resizeBg() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+    }
+    resizeBg();
+    window.addEventListener('resize', resizeBg);
+
+    function drawBackground() {
+      bgTime += 0.004;
+      const w = bgCanvas.width;
+      const h = bgCanvas.height;
+
+      // Orbit three colour points around the canvas
+      const cx1 = w / 2 + Math.cos(bgTime * 0.5) * w * 0.35;
+      const cy1 = h / 2 + Math.sin(bgTime * 0.3) * h * 0.3;
+      const cx2 = w / 2 + Math.cos(bgTime * 0.4 + 2.1) * w * 0.3;
+      const cy2 = h / 2 + Math.sin(bgTime * 0.5 + 1.3) * h * 0.3;
+      const cx3 = w / 2 + Math.cos(bgTime * 0.6 + 4.2) * w * 0.25;
+      const cy3 = h / 2 + Math.sin(bgTime * 0.4 + 3.7) * h * 0.25;
+
+      // Colours that slowly shift hue
+      const hue1 = (bgTime * 20) % 360;
+      const hue2 = (bgTime * 20 + 120) % 360;
+      const hue3 = (bgTime * 20 + 240) % 360;
+
+      const grad = bgCtx.createRadialGradient(cx1, cy1, 0, w / 2, h / 2, Math.max(w, h) * 0.8);
+      grad.addColorStop(0, `hsla(${hue1}, 40%, 15%, 0.6)`);
+      grad.addColorStop(0.4, `hsla(${hue2}, 35%, 10%, 0.4)`);
+      grad.addColorStop(0.7, `hsla(${hue3}, 30%, 7%, 0.3)`);
+      grad.addColorStop(1, 'hsla(220, 20%, 4%, 1)');
+
+      bgCtx.fillStyle = grad;
+      bgCtx.fillRect(0, 0, w, h);
+
+      // Second subtle gradient blob
+      const grad2 = bgCtx.createRadialGradient(cx2, cy2, 0, w / 2, h / 2, Math.max(w, h) * 0.6);
+      grad2.addColorStop(0, `hsla(${(hue1 + 180) % 360}, 30%, 12%, 0.3)`);
+      grad2.addColorStop(1, 'rgba(0,0,0,0)');
+      bgCtx.fillStyle = grad2;
+      bgCtx.fillRect(0, 0, w, h);
+
+      requestAnimationFrame(drawBackground);
+    }
+    drawBackground();
+
+    // ── Floating particle field (extra pixel refresh) ──
+    const particleCanvas = document.getElementById('particle-canvas');
+    const pCtx = particleCanvas.getContext('2d');
+    const particles = [];
+    const PARTICLE_COUNT = 60;
+
+    function resizeParticles() {
+      particleCanvas.width = window.innerWidth;
+      particleCanvas.height = window.innerHeight;
+    }
+    resizeParticles();
+    window.addEventListener('resize', resizeParticles);
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * particleCanvas.width;
+        this.y = Math.random() * particleCanvas.height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.4 + 0.1;
+        this.hue = Math.random() * 360;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.hue += 0.1;
+
+        if (this.x < -10 || this.x > particleCanvas.width + 10 ||
+            this.y < -10 || this.y > particleCanvas.height + 10) {
+          this.reset();
+        }
+      }
+      draw() {
+        pCtx.beginPath();
+        pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        pCtx.fillStyle = `hsla(${this.hue}, 50%, 70%, ${this.opacity})`;
+        pCtx.fill();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    function drawParticles() {
+      pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      for (const p of particles) {
+        p.update();
+        p.draw();
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // ── Credits data fetching ──
     async function fetchCredits() {
       const dot = document.getElementById('statusDot');
       const statusText = document.getElementById('statusText');
