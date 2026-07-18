@@ -418,6 +418,27 @@
     }
     drawParticles();
 
+    // ── Auto-hide cursor on idle (screensaver mode) ──
+    let cursorTimer = null;
+    const CURSOR_IDLE_TIMEOUT = 3000; // 3 seconds
+
+    function showCursor() {
+      document.body.style.cursor = '';
+      clearTimeout(cursorTimer);
+      cursorTimer = setTimeout(() => {
+        document.body.style.cursor = 'none';
+      }, CURSOR_IDLE_TIMEOUT);
+    }
+
+    document.addEventListener('mousemove', showCursor);
+    document.addEventListener('mousedown', showCursor);
+    document.addEventListener('keydown', showCursor);
+    document.addEventListener('touchstart', showCursor);
+    // Start the timer so it hides after initial idle period
+    cursorTimer = setTimeout(() => {
+      document.body.style.cursor = 'none';
+    }, CURSOR_IDLE_TIMEOUT);
+
     // ── Credits data fetching ──
     async function fetchCredits() {
       const dot = document.getElementById('statusDot');
